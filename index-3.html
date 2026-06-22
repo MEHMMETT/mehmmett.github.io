@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="theme-color" content="#080b14"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="MHMTCF"/>
+<title>MHMTCF</title>
+<link rel="manifest" href="manifest.json"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+
+
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080b14;--surface:#0e1120;--card:#111527;--border:#1c2136;
+  --accent:#7c6dfa;--accent2:#38bdf8;--green:#22d3a0;
+  --yellow:#fbbf24;--red:#f87171;--text:#e2e8f0;--muted:#64748b;--dim:#334155;
+}
+html,body{min-height:100%;background:#080b14;color:var(--text);font-family:'Segoe UI',Tahoma,sans-serif;font-size:14px}
+button{font-family:inherit;cursor:pointer}
+input,textarea{font-family:monospace;outline:none;color:var(--text)}
+input:focus,textarea:focus{border-color:var(--accent)!important}
+textarea{resize:vertical}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+#app{display:flex;flex-direction:column;min-height:100vh}
+header{background:linear-gradient(180deg,#0d1026,var(--bg));border-bottom:1px solid var(--border);padding:14px 18px 0;position:sticky;top:0;z-index:10}
+.hrow1{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid #1c213622}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 18px #7c6dfa55}
+.logo-text{font-size:15px;font-weight:800}
+.logo-sub{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:1px}
+.user-badge{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c6dfa22,#38bdf811);border:1px solid #7c6dfa44;border-radius:10px;padding:6px 10px}
+.user-avatar{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff}
+.user-name{font-size:12px;font-weight:800;color:var(--accent);letter-spacing:1px}
+.user-role{font-size:9px;color:var(--muted)}
+.stats{display:flex;gap:20px;padding:12px 0}
+.stat-val{font-size:22px;font-weight:900}
+.stat-label{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:6px;padding:10px 0 0}
+.tab{padding:7px 16px;border-radius:9px 9px 0 0;font-size:13px;font-weight:700;border:1px solid var(--border);border-bottom:none;background:transparent;color:var(--muted);transition:.15s}
+.tab.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 -4px 14px #7c6dfa33}
+main{flex:1;max-width:720px;width:100%;margin:0 auto;padding:18px 14px 80px}
+.input-box{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:18px;margin-bottom:18px}
+.input-hint{font-size:12px;color:var(--muted);margin-bottom:8px}
+.raw-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:12px;direction:ltr;transition:border-color .2s;min-height:80px}
+.error-msg{font-size:12px;color:var(--red);margin-top:6px}
+.btn-row{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;box-shadow:0 4px 14px #7c6dfa44;transition:opacity .2s}
+.btn-primary:disabled{opacity:.35;box-shadow:none;cursor:default}
+.btn-green{background:#22d3a018;border:1px solid #22d3a044;color:var(--green);border-radius:9px;padding:9px 14px;font-size:13px}
+.shortcut{font-size:11px;color:var(--dim);margin-right:auto}
+.cards{display:flex;flex-direction:column;gap:10px;animation:fadeIn .2s}
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px 18px;cursor:pointer;transition:border-color .18s,box-shadow .18s;position:relative;overflow:hidden}
+.card.selected{background:linear-gradient(135deg,#13173a,var(--card));border-color:var(--accent);box-shadow:0 0 0 3px #7c6dfa22}
+.card-stripe{position:absolute;top:0;left:0;right:0;height:2px;transition:background .2s}
+.card.selected .card-stripe{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.card-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.cfg-name{margin-right:auto;font-size:13px;font-weight:700;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:monospace}
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;font-size:11px;font-family:monospace;margin-bottom:12px}
+.field-key{color:var(--accent);margin-left:4px}
+.field-val{color:var(--muted)}
+.card-actions{display:flex;gap:5px;flex-wrap:wrap}
+.action-btn{background:transparent;border-radius:7px;padding:4px 9px;font-size:11px;display:flex;align-items:center;gap:3px;transition:.15s}
+.ping-ring{display:flex;align-items:center;gap:5px}
+.ping-dot{width:8px;height:8px;border-radius:50%;border:2px solid}
+.ping-val{font-size:11px;font-family:monospace;font-weight:700}
+.empty{text-align:center;color:var(--dim);margin-top:70px;animation:fadeIn .4s}
+.empty-icon{font-size:56px;margin-bottom:12px}
+.empty-title{font-size:15px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.empty-sub{font-size:12px}
+.compare-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px;animation:fadeIn .2s}
+.compare-hint{text-align:center;color:var(--dim);margin-top:40px;font-size:13px;line-height:2}
+.compare-table{width:100%;border-collapse:collapse;font-size:12px}
+.compare-table th,.compare-table td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--border)}
+.compare-table th{color:var(--text);font-weight:700;background:var(--card)}
+.compare-diff{background:#1a1500}
+.compare-diff td{color:var(--yellow)}
+.compare-note{font-size:11px;color:var(--dim);margin-top:8px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px);animation:fadeIn .15s}
+.modal{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:26px;width:440px;max-width:94vw;box-shadow:0 24px 60px #00000088;animation:slideUp .2s;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:18px}
+.field-label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px}
+.field-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;transition:border-color .2s}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.btn-save{flex:1;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:9px;padding:10px;font-size:14px;font-weight:700}
+.btn-cancel{flex:1;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:9px;padding:10px;font-size:14px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 22px;font-size:13px;box-shadow:0 8px 32px #000a;animation:slideUp .25s;z-index:999;white-space:nowrap}
+.install-banner{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(90deg,#0e1120,#13173a);border-top:1px solid var(--accent);padding:14px 20px;display:flex;align-items:center;gap:12px;z-index:50;animation:slideUp .3s}
+.btn-install{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:9px;padding:8px 18px;font-size:13px;font-weight:700}
+.btn-dismiss{background:transparent;border:none;color:var(--muted);font-size:18px;padding:4px 8px}
+.loading-spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-left:6px}
+/* QR Modal */
+#qr-box{display:flex;justify-content:center;margin:16px 0}
+#qr-box canvas,#qr-box img{border-radius:8px}
+.export-btn-row{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.export-btn{width:100%;padding:10px;border-radius:9px;font-size:13px;font-weight:700;border:1px solid;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+
+  body.light{
+    --bg:#f1f5fb;--surface:#ffffff;--card:#f8f9fd;--border:#dde1f0;
+    --accent:#6c5ce7;--accent2:#0984e3;--green:#00b894;
+    --yellow:#e17055;--red:#d63031;--text:#1a1f36;--muted:#636e8a;--dim:#b2becd;
+  }
+  body.light header{background:rgba(241,245,251,.9)!important;border-bottom-color:#dde1f0}
+  body.light main{background:transparent}
+  body.light .input-box{background:#ffffff!important;border-color:#dde1f0!important}
+  body.light .card{background:#ffffff!important;border-color:#dde1f0!important}
+  body.light .card.selected{background:linear-gradient(135deg,#ede9ff,#fff)!important;border-color:#6c5ce7!important}
+  body.light .card.pinned{border-color:#e17055!important}
+  body.light .raw-input{background:#f1f5fb!important;color:#1a1f36!important;border-color:#dde1f0!important}
+  body.light .field-input{background:#f1f5fb!important;color:#1a1f36!important;border-color:#dde1f0!important}
+  body.light #announce-input{background:#f1f5fb!important;color:#1a1f36!important}
+  body.light .modal{background:#ffffff!important;border-color:#dde1f0!important}
+  body.light .toast{background:#ffffff!important;color:#1a1f36!important;border-color:#dde1f0!important}
+  body.light .compare-wrap{background:#ffffff!important;border-color:#dde1f0!important}
+  body.light .compare-table th{background:#f1f5fb!important}
+  body.light .announce-form{background:#ffffff!important;border-color:#dde1f0!important}
+  body.light .user-badge{background:linear-gradient(135deg,#6c5ce722,#0984e311)!important}
+  body.light .tab:not(.active){color:#636e8a}
+  body.light .cfg-name{color:#1a1f36}
+  body.light .logo-text{color:#1a1f36}
+  body.light .user-name{color:#6c5ce7}
+  .theme-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:16px;color:var(--text);cursor:pointer;transition:.2s}
+
+
+  body.light{background:#f1f5fb!important}
+  body.light main{background:#f1f5fb!important}
+  body.light #app{background:#f1f5fb!important}
+  body.light .empty{color:#636e8a}
+  body.light .empty-title{color:#1a1f36}
+  body.light .stat-label{color:#636e8a}
+  body.light .cards{background:transparent}
+  body.light .announce-card.info{background:#e8f4fd!important;border-color:#0984e355!important}
+  body.light .announce-card.warning{background:#fff8e1!important;border-color:#fdcb6e88!important}
+  body.light .announce-card.important{background:#ffeaea!important;border-color:#d6303155!important}
+  body.light .announce-card.success{background:#e6faf5!important;border-color:#00b89455!important}
+  body.light .announce-text{color:#1a1f36}
+  body.light .field-key{color:#6c5ce7}
+  body.light .field-val{color:#636e8a}
+  body.light .shortcut{color:#b2becd}
+  body.light .btn-cancel{color:#636e8a;border-color:#dde1f0}
+  body.light .btn-ghost{color:#636e8a;border-color:#dde1f0}
+  body.light .compare-diff{background:#fff8e1!important}
+  body.light .compare-diff td{color:#e17055!important}
+
+
+  .lang-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;transition:.2s;letter-spacing:.5px}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="hrow1">
+      <div class="logo">
+        <div class="logo-icon" style="font-size:22px;font-weight:900;letter-spacing:-1px">M</div>
+        <div>
+          <div class="logo-text">MHMTCF</div>
+          <div class="logo-sub" id="logo-sub">VLESS · VMESS · WS · TLS</div>
+        </div>
+      </div>
+      <div class="user-badge">
+        <div class="user-avatar">M</div>
+        <div>
+          <div class="user-name">MEHMMET</div>
+          <div class="user-role" id="user-role-label">بازدیدکننده</div>
+        </div>
+        <button class="theme-btn" id="btn-theme" onclick="toggleTheme()">🌙</button>
+        <button class="lang-btn" id="btn-lang" onclick="toggleLang()">EN</button>
+        <button id="btn-login" onclick="openLoginModal()" style="background:var(--accent);color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:11px">ورود</button>
+        <button id="btn-lock" onclick="logout()" style="display:none;background:#f8717122;color:var(--red);border:1px solid #f8717144;border-radius:7px;padding:4px 10px;font-size:11px">خروج</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div><span class="stat-val" id="stat-total" style="color:var(--accent)">0</span> <span class="stat-label" id="stat-label-total">کانفیگ</span></div>
+      <div><span class="stat-val" id="stat-good" style="color:var(--green)">0</span> <span class="stat-label" id="stat-label-good">آنلاین</span></div>
+      <div><span class="stat-val" id="stat-bad" style="color:var(--red)">0</span> <span class="stat-label" id="stat-label-bad">ضعیف</span></div>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="list">📋 لیست</button>
+      <button class="tab" data-tab="compare">⚖️ مقایسه</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="admin-only" style="display:none">
+      <div class="input-box">
+        <div class="input-hint" id="input-hint">هر کانفیگ را در یک خط وارد کن (vless:// یا vmess://)</div>
+        <textarea class="raw-input" id="raw-input" rows="3" placeholder="vless://uuid@host:443?type=ws&security=tls#نام&#10;vmess://base64..."></textarea>
+        <div class="error-msg" id="error-msg" style="display:none"></div>
+        <div class="btn-row">
+          <button class="btn-primary" id="btn-add" disabled>+ افزودن</button>
+          <button class="btn-green" id="btn-ping-all" style="display:none">📡 پینگ همه</button>
+          <span class="shortcut">Ctrl+Enter</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Announcements -->
+    <div class="announce-section" id="announce-section">
+      <!-- Admin form (admin only) -->
+      <div class="admin-only announce-form" style="display:none">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px" id="announce-hint-text">📢 اعلان جدید</div>
+        <textarea id="announce-input" placeholder="متن اعلان رو بنویس..." style="background:#111527;color:#e2e8f0;border:1px solid #1c2136;border-radius:8px;width:100%;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:70px;direction:rtl"></textarea>
+        <div class="type-btns">
+          <button class="type-btn" data-type="info" style="color:#38bdf8;border-color:#38bdf8;background:#38bdf811" onclick="selectType('info')">ℹ️ اطلاعیه</button>
+          <button class="type-btn" data-type="warning" style="color:#fbbf24;border-color:#fbbf24;background:#fbbf2411" onclick="selectType('warning')">⚠️ هشدار</button>
+          <button class="type-btn" data-type="important" style="color:#f87171;border-color:#f87171;background:#f8717111" onclick="selectType('important')">🚨 مهم</button>
+          <button class="type-btn" data-type="success" style="color:#22d3a0;border-color:#22d3a0;background:#22d3a011" onclick="selectType('success')">✅ موفق</button>
+        </div>
+        <button class="btn-primary" id="btn-send-announce" style="width:100%;margin-top:4px" onclick="addAnnounce()">+ ارسال اعلان</button>
+      </div>
+      <!-- Announcements list -->
+      <div id="announce-list"></div>
+    </div>
+
+    <div id="panel-list">
+      <div class="empty" id="empty-state">
+        <div class="empty-icon">🔌</div>
+        <div class="empty-title" id="empty-title">هنوز کانفیگی نداری</div>
+        <div class="empty-sub" id="empty-sub">لاگین کن و کانفیگ اضافه کن</div>
+      </div>
+      <div class="cards" id="cards"></div>
+    </div>
+
+    <div id="panel-compare" style="display:none">
+      <div class="compare-wrap" id="compare-wrap"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Login Modal -->
+<div class="modal-bg" id="login-modal" style="display:none">
+  <div class="modal" style="max-width:340px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:40px;margin-bottom:8px">🔐</div>
+      <div class="modal-title" style="margin-bottom:4px">ورود ادمین</div>
+      <div style="font-size:12px;color:var(--muted)">فقط MEHMMET می‌تونه وارد بشه</div>
+    </div>
+    <input id="pass-input" type="password" class="field-input" placeholder="رمز عبور..." style="width:100%;margin-bottom:10px;padding:10px 14px;font-size:14px;text-align:center;direction:ltr"/>
+    <div id="pass-error" style="display:none;color:var(--red);font-size:12px;text-align:center;margin-bottom:10px">❌ رمز اشتباهه!</div>
+    <div class="modal-actions">
+      <button class="btn-save" onclick="tryLogin()">ورود</button>
+      <button class="btn-cancel" onclick="closeLoginModal()">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-bg" id="edit-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-title">✏️ ویرایش کانفیگ</div>
+    <div id="modal-fields"></div>
+    <div class="modal-actions">
+      <button class="btn-save" id="btn-save">ذخیره</button>
+      <button class="btn-cancel" onclick="closeEditModal()">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR / Export Modal -->
+<div class="modal-bg" id="qr-modal" style="display:none">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-title" id="qr-modal-title">📤 اشتراک‌گذاری کانفیگ</div>
+    <div id="qr-box"></div>
+    <div class="export-btn-row">
+      <button class="export-btn" id="btn-copy-link" style="color:var(--accent2);border-color:var(--accent2);background:#38bdf811">📋 کپی لینک کانفیگ</button>
+      <button class="export-btn" id="btn-copy-base64" style="color:var(--yellow);border-color:var(--yellow);background:#fbbf2411">📦 کپی Base64 (برای Nekoray)</button>
+      <button class="export-btn" id="btn-dl-qr" style="color:var(--green);border-color:var(--green);background:#22d3a011">💾 دانلود QR Code</button>
+    </div>
+    <button class="btn-cancel" style="width:100%;margin-top:12px" onclick="closeQrModal()">بستن</button>
+  </div>
+</div>
+
+<!-- Export All Modal -->
+<div class="modal-bg" id="export-modal" style="display:none">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-title">📦 Export همه کانفیگ‌ها</div>
+    <div class="export-btn-row">
+      <button class="export-btn" onclick="exportAllLinks()" style="color:var(--accent2);border-color:var(--accent2);background:#38bdf811">📋 کپی همه لینک‌ها</button>
+      <button class="export-btn" onclick="exportBase64()" style="color:var(--yellow);border-color:var(--yellow);background:#fbbf2411">📦 کپی Base64 همه</button>
+      <button class="export-btn" onclick="downloadTxt()" style="color:var(--green);border-color:var(--green);background:#22d3a011">💾 دانلود فایل .txt</button>
+    </div>
+    <div id="qr-all-box" style="margin-top:16px"></div>
+    <button class="export-btn" onclick="showSubscribeQR()" style="color:var(--accent);border-color:var(--accent);background:#7c6dfa11;margin-top:8px">📱 QR اشتراک (Subscribe)</button>
+    <button class="btn-cancel" style="width:100%;margin-top:12px" onclick="document.getElementById('export-modal').style.display='none'">بستن</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" style="display:none"></div>
+
+<div class="install-banner" id="install-banner" style="display:none">
+  <div style="flex:1">
+    <div style="font-size:13px">📲 نصب اپ روی گوشی</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:2px">بدون App Store</div>
+  </div>
+  <button class="btn-install" id="btn-install">نصب</button>
+  <button class="btn-dismiss" id="btn-dismiss">✕</button>
+</div>
+
+<script>
+
+// ── Announcements ────────────────────────────────────────────────────────────
+let announcements = JSON.parse(localStorage.getItem('announces') || '[]');
+let selectedType = 'info';
+
+function selectType(type){
+  selectedType = type;
+  document.querySelectorAll('.type-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.type===type);
+  });
+}
+
+const TYPE_ICONS = {info:'ℹ️',warning:'⚠️',important:'🚨',success:'✅'};
+const TYPE_LABELS = {info:'اطلاعیه',warning:'هشدار',important:'مهم',success:'موفق'};
+
+function renderAnnounces(){
+  const list = document.getElementById('announce-list');
+  if(!announcements.length){ list.innerHTML=''; return; }
+  list.innerHTML = `
+    <div class="announce-header">
+      <span class="announce-title">📢 اعلانات (${announcements.length})</span>
+    </div>
+    ${sortedAnnounces().map(a=>`
+    <div class="announce-card ${a.type}">
+      ${isAdmin?`<button class="announce-del" onclick="deleteAnnounce('${a.id}')">✕</button>`:''}
+      <div class="announce-tag ${a.type}">${TYPE_ICONS[a.type]} ${TYPE_LABELS[a.type]}</div>
+      <div class="announce-text">${a.text.replace(/\n/g,'<br>')}</div>
+      <div class="announce-date">🕐 ${a.date}</div>
+    </div>`).join('')}
+  `;
+}
+
+function addAnnounce(){
+  const inp = document.getElementById('announce-input');
+  const text = inp.value.trim();
+  if(!text) return;
+  const now = new Date();
+  const date = now.toLocaleDateString('fa-IR')+' — '+now.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
+  const a = {id:uid(), type:selectedType, text, date};
+  announcements.push(a);
+  localStorage.setItem('announces', JSON.stringify(announcements));
+  inp.value='';
+  renderAnnounces();
+  showToast(t().toastAnnounce);
+}
+
+function deleteAnnounce(id){
+  announcements = announcements.filter(a=>a.id!==id);
+  localStorage.setItem('announces', JSON.stringify(announcements));
+  renderAnnounces();
+  showToast(t().toastAnnDel);
+}
+
+// init type buttons
+setTimeout(()=>selectType('info'), 0);
+
+
+// Theme
+let isDark=localStorage.getItem('theme')!=='light';
+function applyTheme(){document.body.classList.toggle('light',!isDark);const b=document.getElementById('btn-theme');if(b)b.textContent=isDark?'🌙':'☀️';}
+function toggleTheme(){isDark=!isDark;localStorage.setItem('theme',isDark?'dark':'light');applyTheme();}
+
+// Pin
+let pinnedConfigs=JSON.parse(localStorage.getItem('pinnedCfgs')||'[]');
+let pinnedAnnounces=JSON.parse(localStorage.getItem('pinnedAnn')||'[]');
+function togglePinConfig(id,e){e.stopPropagation();if(pinnedConfigs.includes(id))pinnedConfigs=pinnedConfigs.filter(x=>x!==id);else pinnedConfigs.push(id);localStorage.setItem('pinnedCfgs',JSON.stringify(pinnedConfigs));render();showToast(pinnedConfigs.includes(id)?t().toastPinned:t().toastUnpinned);}
+function togglePinAnnounce(id){if(pinnedAnnounces.includes(id))pinnedAnnounces=pinnedAnnounces.filter(x=>x!==id);else pinnedAnnounces.push(id);localStorage.setItem('pinnedAnn',JSON.stringify(pinnedAnnounces));renderAnnounces();showToast('📌 پین شد');}
+function sortedConfigs(){return[...configs.filter(c=>pinnedConfigs.includes(c.id)),...configs.filter(c=>!pinnedConfigs.includes(c.id))];}
+function sortedAnnounces(){return[...announcements.filter(a=>pinnedAnnounces.includes(a.id)),...announcements.filter(a=>!pinnedAnnounces.includes(a.id))].reverse();}
+
+
+// ── Language ──────────────────────────────────────────────────────────────────
+let isFA = localStorage.getItem('lang') !== 'en';
+
+const T = {
+  fa: {
+    appSub: 'VLESS · VMESS · WS · TLS',
+    admin: 'مدیر سیستم ✓', visitor: 'بازدیدکننده',
+    login: 'ورود', logout: 'خروج',
+    cfgCount: 'کانفیگ', online: 'آنلاین', weak: 'ضعیف',
+    tabList: '📋 لیست', tabCompare: '⚖️ مقایسه',
+    inputHint: 'هر کانفیگ را در یک خط وارد کن (vless:// یا vmess://)',
+    addBtn: '+ افزودن', pingAll: '📡 پینگ همه',
+    emptyTitle: 'هنوز کانفیگی نداری', emptySub: 'لاگین کن و کانفیگ اضافه کن',
+    copy: 'کپی', share: 'QR/Export', ping: 'پینگ', pin: 'پین', pinned: 'پین شد',
+    edit: 'ویرایش', del: 'حذف',
+    announceNew: '📢 اعلان جدید', announcePlaceholder: 'متن اعلان رو بنویس...',
+    sendAnnounce: '+ ارسال اعلان',
+    typeInfo: 'ℹ️ اطلاعیه', typeWarn: '⚠️ هشدار', typeImp: '🚨 مهم', typeOk: '✅ موفق',
+    compareHint: 'دو کارت را از لیست انتخاب کنید', compareDiff: '🟡 سطرهای زرد = تفاوت',
+    loginTitle: 'ورود ادمین', loginSub: 'فقط MEHMMET می‌تونه وارد بشه',
+    loginPass: 'رمز عبور...', loginBtn: 'ورود', loginCancel: 'انصراف', loginErr: '❌ رمز اشتباهه!',
+    saveBtn: 'ذخیره', cancelBtn: 'انصراف',
+    fieldName: 'نام', fieldHost: 'هاست', fieldPort: 'پورت', fieldUUID: 'UUID', fieldSNI: 'SNI', fieldPath: 'مسیر',
+    host: 'هاست', uuid: 'UUID', sni: 'SNI', path: 'مسیر',
+    toastAdded: (n) => `✅ ${n} کانفیگ اضافه شد`,
+    toastDeleted: '🗑 کانفیگ حذف شد', toastCopied: '📋 کانفیگ کپی شد',
+    toastSaved: '✅ تغییرات ذخیره شد', toastPinned: '📌 پین شد', toastUnpinned: '📌 برداشته شد',
+    toastAnnounce: '📢 اعلان ارسال شد', toastAnnDel: '🗑 اعلان حذف شد', toastAnnPin: '📌 اعلان پین شد',
+    toastWelcome: '🔓 خوش اومدی MEHMMET!', toastLogout: '🔒 خروج از حساب ادمین',
+    announcements: (n) => `📢 اعلانات (${n})`,
+    dir: 'rtl',
+  },
+  en: {
+    appSub: 'VLESS · VMESS · WS · TLS',
+    admin: 'Admin ✓', visitor: 'Visitor',
+    login: 'Login', logout: 'Logout',
+    cfgCount: 'Configs', online: 'Online', weak: 'Weak',
+    tabList: '📋 List', tabCompare: '⚖️ Compare',
+    inputHint: 'Enter each config on a new line (vless:// or vmess://)',
+    addBtn: '+ Add', pingAll: '📡 Ping All',
+    emptyTitle: 'No configs yet', emptySub: 'Login and add a config',
+    copy: 'Copy', share: 'QR/Export', ping: 'Ping', pin: 'Pin', pinned: 'Pinned',
+    edit: 'Edit', del: 'Delete',
+    announceNew: '📢 New Announcement', announcePlaceholder: 'Write your announcement...',
+    sendAnnounce: '+ Send',
+    typeInfo: 'ℹ️ Info', typeWarn: '⚠️ Warning', typeImp: '🚨 Important', typeOk: '✅ Success',
+    compareHint: 'Select two configs from the list to compare', compareDiff: '🟡 Yellow rows = differences',
+    loginTitle: 'Admin Login', loginSub: 'Only MEHMMET can login',
+    loginPass: 'Password...', loginBtn: 'Login', loginCancel: 'Cancel', loginErr: '❌ Wrong password!',
+    saveBtn: 'Save', cancelBtn: 'Cancel',
+    fieldName: 'Name', fieldHost: 'Host', fieldPort: 'Port', fieldUUID: 'UUID', fieldSNI: 'SNI', fieldPath: 'Path',
+    host: 'Host', uuid: 'UUID', sni: 'SNI', path: 'Path',
+    toastAdded: (n) => `✅ ${n} config(s) added`,
+    toastDeleted: '🗑 Config deleted', toastCopied: '📋 Copied!',
+    toastSaved: '✅ Changes saved', toastPinned: '📌 Pinned', toastUnpinned: '📌 Unpinned',
+    toastAnnounce: '📢 Announcement sent', toastAnnDel: '🗑 Announcement deleted', toastAnnPin: '📌 Announcement pinned',
+    toastWelcome: '🔓 Welcome MEHMMET!', toastLogout: '🔒 Logged out',
+    announcements: (n) => `📢 Announcements (${n})`,
+    dir: 'ltr',
+  }
+};
+
+function t(){ return isFA ? T.fa : T.en; }
+
+function applyLang(){
+  const lang = t();
+  document.documentElement.setAttribute('dir', lang.dir);
+  document.documentElement.setAttribute('lang', isFA ? 'fa' : 'en');
+  const b = document.getElementById('btn-lang');
+  if(b) b.textContent = isFA ? 'EN' : 'FA';
+  // Update static UI elements
+  const els = {
+    'logo-sub': lang.appSub,
+    'user-role-label': isAdmin ? lang.admin : lang.visitor,
+    'stat-label-total': lang.cfgCount,
+    'stat-label-good': lang.online,
+    'stat-label-bad': lang.weak,
+    'btn-add': lang.addBtn,
+    'btn-ping-all': lang.pingAll,
+    'empty-title': lang.emptyTitle,
+    'empty-sub': lang.emptySub,
+    'input-hint': lang.inputHint,
+    'announce-hint-text': lang.announceNew,
+    'announce-input': null, // placeholder only
+    'btn-send-announce': lang.sendAnnounce,
+    'btn-login': lang.login,
+    'btn-lock': lang.logout,
+  };
+  Object.entries(els).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if(el && val !== null) el.textContent = val;
+  });
+  const annInp = document.getElementById('announce-input');
+  if(annInp) annInp.placeholder = lang.announcePlaceholder;
+  const rawInp = document.getElementById('raw-input');
+  if(rawInp) rawInp.setAttribute('dir', 'ltr');
+  // Update tabs
+  const tabs = document.querySelectorAll('.tab');
+  if(tabs[0]) tabs[0].textContent = lang.tabList;
+  if(tabs[1]) tabs[1].textContent = lang.tabCompare;
+  render();
+  renderAnnounces();
+}
+
+function toggleLang(){
+  isFA = !isFA;
+  localStorage.setItem('lang', isFA ? 'fa' : 'en');
+  applyLang();
+}
+
+// ── Supabase ────────────────────────────────────────────────────────────────
+const SB_URL = 'https://dybrfvjwiywklgpaufsf.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5YnJmdmp3aXl3a2xncGF1ZnNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5Njk4MTAsImV4cCI6MjA5NzU0NTgxMH0.Rpuqzr1BtRSWKDD8p9raTRru0NAQeJ6lPaoA_flkSA8';
+const SB_HDR = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+
+async function sbFetch(path, opts={}) {
+  const r = await fetch(SB_URL+'/rest/v1/'+path, {...opts, headers:{...SB_HDR,...(opts.headers||{})}});
+  if (!r.ok) throw new Error(await r.text());
+  return r.status===204 ? null : r.json();
+}
+
+async function loadFromDB() {
+  try {
+    const rows = await sbFetch('configs?select=*&order=created_at.asc');
+    configs = rows.map(r=>({...r, ping:null, pinging:false}));
+    render();
+  } catch(e){ showToast('⚠️ خطا در بارگذاری: '+e.message); }
+}
+
+async function saveToDB(cfg) {
+  const {ping,pinging,...row} = cfg;
+  await sbFetch('configs', {method:'POST', headers:{'Prefer':'return=minimal'}, body:JSON.stringify(row)});
+}
+
+async function deleteFromDB(id) {
+  await sbFetch('configs?id=eq.'+id, {method:'DELETE'});
+}
+
+async function updateInDB(cfg) {
+  const {ping,pinging,...row} = cfg;
+  await sbFetch('configs?id=eq.'+cfg.id, {method:'PATCH', headers:{'Prefer':'return=minimal'}, body:JSON.stringify(row)});
+}
+
+// ── Auth ────────────────────────────────────────────────────────────────────
+const PASS = 'MEHMMET.CAYEN.2002';
+let isAdmin = sessionStorage.getItem('admin') === '1';
+
+function openLoginModal() {
+  document.getElementById('login-modal').style.display = 'flex';
+  setTimeout(()=>document.getElementById('pass-input').focus(), 100);
+}
+function closeLoginModal() {
+  document.getElementById('login-modal').style.display = 'none';
+  document.getElementById('pass-input').value = '';
+  document.getElementById('pass-error').style.display = 'none';
+}
+
+function tryLogin() {
+  const inp = document.getElementById('pass-input');
+  if (inp.value === PASS) {
+    isAdmin = true;
+    sessionStorage.setItem('admin','1');
+    closeLoginModal();
+    setAdminUI();
+    render();
+    showToast(t().toastWelcome);
+  } else {
+    document.getElementById('pass-error').style.display = '';
+    inp.value = '';
+    setTimeout(()=>document.getElementById('pass-error').style.display='none', 2000);
+  }
+}
+
+function logout() {
+  isAdmin = false;
+  sessionStorage.removeItem('admin');
+  setAdminUI();
+  render();
+  showToast(t().toastLogout);
+}
+
+function setAdminUI() {
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'':'none');
+  document.getElementById('user-role-label').textContent = isAdmin ? t().admin : t().visitor;
+  document.getElementById('btn-lock').style.display = isAdmin ? '' : 'none';
+  document.getElementById('btn-login').style.display = isAdmin ? 'none' : '';
+  renderAnnounces();
+  applyLang();
+}
+
+// ── State ───────────────────────────────────────────────────────────────────
+let configs = [];
+let selectedIds = [];
+let editingId = null;
+let qrCfgId = null;
+let deferredInstall = null;
+
+function uid() { return Math.random().toString(36).slice(2)+Date.now().toString(36); }
+
+// ── Parse ───────────────────────────────────────────────────────────────────
+function parseConfig(raw) {
+  raw = raw.trim();
+  try {
+    if (raw.startsWith('vless://')) {
+      // Manual parse instead of URL API for better compatibility
+      const withoutScheme = raw.slice(8); // remove vless://
+      const hashIdx = withoutScheme.indexOf('#');
+      const name = hashIdx>=0 ? decodeURIComponent(withoutScheme.slice(hashIdx+1)) : 'Unnamed';
+      const main = hashIdx>=0 ? withoutScheme.slice(0,hashIdx) : withoutScheme;
+      const qIdx = main.indexOf('?');
+      const queryStr = qIdx>=0 ? main.slice(qIdx+1) : '';
+      const hostPart = qIdx>=0 ? main.slice(0,qIdx) : main;
+      const atIdx = hostPart.indexOf('@');
+      const uuid = atIdx>=0 ? hostPart.slice(0,atIdx) : '';
+      const hostPort = atIdx>=0 ? hostPart.slice(atIdx+1) : hostPart;
+      const lastColon = hostPort.lastIndexOf(':');
+      const host = lastColon>=0 ? hostPort.slice(0,lastColon) : hostPort;
+      const port = lastColon>=0 ? hostPort.slice(lastColon+1) : '443';
+      const params = {};
+      queryStr.split('&').forEach(p=>{const[k,v]=p.split('=');if(k)params[k]=decodeURIComponent(v||'');});
+      return {type:'VLESS',id:uid(),name,uuid,host,port,
+        network:params.type||'tcp',tls:params.security||'none',
+        sni:params.sni||params.host||'',path:params.path||'',raw,ping:null,pinging:false};
+    }
+    if (raw.startsWith('vmess://')) {
+      const d = JSON.parse(atob(raw.slice(8)));
+      return {type:'VMESS',id:uid(),name:d.ps||d.add||'Unnamed',
+        uuid:d.id,host:d.add,port:String(d.port),
+        network:d.net||'tcp',tls:d.tls||'none',
+        sni:d.sni||d.host||'',path:d.path||'',raw,ping:null,pinging:false};
+    }
+  } catch(e){ console.log('parse error:',e,raw); }
+  return null;
+}
+
+// ── Ping ────────────────────────────────────────────────────────────────────
+async function doPing(id) {
+  const cfg = configs.find(c=>c.id===id);
+  if (!cfg||cfg.pinging) return;
+  cfg.pinging=true; render();
+  const start = performance.now();
+  try {
+    await Promise.race([
+      fetch('https://'+cfg.host+':'+(cfg.port||443),{mode:'no-cors',cache:'no-store'}),
+      new Promise((_,r)=>setTimeout(()=>r(),5000))
+    ]);
+  } catch(e){}
+  cfg.ping=Math.round(performance.now()-start);
+  cfg.pinging=false;
+  render();
+  showToast('📡 پینگ '+cfg.name+': '+cfg.ping+'ms');
+}
+function pingAll(){configs.forEach(c=>doPing(c.id));}
+
+// ── Badge ────────────────────────────────────────────────────────────────────
+const BADGE={VLESS:['#7c6dfa','#0e0b1f'],VMESS:['#fbbf24','#1a1300'],ws:['#38bdf8','#001829'],tcp:['#a78bfa','#110d20'],grpc:['#f472b6','#1a0013'],tls:['#22d3a0','#001a12'],reality:['#06b6d4','#001a1f'],none:['#334155','#0d1117']};
+function badge(l){const[fg,bg]=BADGE[l]||['#64748b','#0d1117'];return`<span class="badge" style="background:${bg};color:${fg};border:1px solid ${fg}33">${l}</span>`;}
+function pingColor(ms){if(ms===null)return'#64748b';if(ms<200)return'#22d3a0';if(ms<500)return'#fbbf24';return'#f87171';}
+function pingHTML(cfg){
+  const c=pingColor(cfg.ping);
+  const label=cfg.pinging?'…':cfg.ping===null?'—':cfg.ping+'ms';
+  const ds=cfg.pinging?`border:2px solid ${c};animation:pulse 1s infinite`:cfg.ping!==null?`background:${c};border:2px solid ${c};box-shadow:0 0 6px ${c}`:`border:2px solid ${c}`;
+  return`<div class="ping-ring"><div class="ping-dot" style="${ds}"></div><span class="ping-val" style="color:${c}">${label}</span></div>`;
+}
+function aBtn(color,emoji,text,fn){return`<button class="action-btn" style="border:1px solid ${color}44;color:${color}" onclick="${fn}">${emoji} ${text}</button>`;}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function renderCards(){
+  const cont=document.getElementById('cards');
+  const empty=document.getElementById('empty-state');
+  if(!configs.length){cont.innerHTML='';empty.style.display='';return;}
+  empty.style.display='none';
+  cont.innerHTML=sortedConfigs().map(cfg=>{
+    const sel=selectedIds.includes(cfg.id);
+    const ip=pinnedConfigs.includes(cfg.id);
+    const fields=[[t().host,`${cfg.host}:${cfg.port}`],['UUID',cfg.uuid?cfg.uuid.slice(0,12)+'…':'—'],cfg.sni?[t().sni,cfg.sni]:null,cfg.path?[t().path,cfg.path]:null].filter(Boolean);
+    return`<div class="card${sel?' selected':''} ${ip?'pinned':''}" id="card-${cfg.id}" onclick="toggleSelect('${cfg.id}')">
+      <div class="card-stripe"></div>
+      <div class="card-top">${badge(cfg.type)} ${badge(cfg.network)}${cfg.tls!=='none'?badge(cfg.tls):''}<span class="cfg-name">${cfg.name}</span>${pingHTML(cfg)}</div>
+      <div class="card-grid">${fields.map(([k,v])=>`<div><span class="field-key">${k}</span><span class="field-val">${v}</span></div>`).join('')}</div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        ${aBtn('#38bdf8','📋',t().copy,`copyRaw('${cfg.id}')`)}
+        ${aBtn('#a78bfa','📤','QR/Export',`openQR('${cfg.id}')`)}
+        ${aBtn('#22d3a0','📡',t().ping,`doPing('${cfg.id}')`)} ${aBtn(ip?'#fbbf24':'#64748b','📌',ip?t().pinned:t().pin,`togglePinConfig('${cfg.id}',event)`)}
+        ${isAdmin?aBtn('#7c6dfa','✏️',t().edit,`openEdit('${cfg.id}')`):''}
+        ${isAdmin?aBtn('#f87171','🗑',t().del,`deleteConfig('${cfg.id}')`):''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCompare(){
+  const wrap=document.getElementById('compare-wrap');
+  const items=configs.filter(c=>selectedIds.includes(c.id));
+  if(items.length<2){wrap.innerHTML='<div class="compare-hint">⚖️<br>'+t().compareHint+'</div>';return;}
+  const fields=[['type','نوع'],['host','هاست'],['port','پورت'],['network','شبکه'],['tls','امنیت'],['sni','SNI'],['path','مسیر']];
+  const[a,b]=items;
+  wrap.innerHTML=`<table class="compare-table"><thead><tr><th></th><th>${a.name} ${pingHTML(a)}</th><th>${b.name} ${pingHTML(b)}</th></tr></thead><tbody>${fields.map(([f,label])=>{const va=a[f]||'—',vb=b[f]||'—',diff=va!==vb;return`<tr class="${diff?'compare-diff':''}"><td style="color:var(--muted);font-weight:600">${label}</td><td><span style="font-family:monospace">${va}</span></td><td><span style="font-family:monospace">${vb}</span></td></tr>`;}).join('')}</tbody></table><p class="compare-note">🟡 سطرهای زرد = تفاوت</p>`;
+}
+
+function updateStats(){
+  document.getElementById('stat-total').textContent=configs.length;
+  document.getElementById('stat-good').textContent=configs.filter(c=>c.ping!==null&&c.ping<500).length;
+  document.getElementById('stat-bad').textContent=configs.filter(c=>c.ping!==null&&c.ping>=500).length;
+  document.getElementById('btn-ping-all').style.display=configs.length?'':'none';
+}
+
+function render(){renderCards();renderCompare();updateStats();}
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+document.getElementById('tabs').addEventListener('click',e=>{
+  const tab=e.target.dataset.tab;if(!tab)return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  document.getElementById('panel-list').style.display=tab==='list'?'':'none';
+  document.getElementById('panel-compare').style.display=tab==='compare'?'':'none';
+  if(tab==='compare')renderCompare();
+});
+
+// ── Add ──────────────────────────────────────────────────────────────────────
+const rawInput=document.getElementById('raw-input');
+const btnAdd=document.getElementById('btn-add');
+rawInput.addEventListener('input',()=>btnAdd.disabled=!rawInput.value.trim());
+rawInput.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='Enter')addConfigs();});
+
+async function addConfigs(){
+  const lines=rawInput.value.split('\n').map(l=>l.trim()).filter(Boolean);
+  let added=0,errs=0,saveErrs=0;
+  for(const line of lines){
+    const p=parseConfig(line);
+    if(p){
+      try{
+        await saveToDB(p);
+        configs.push(p);
+        added++;
+      } catch(e){
+        saveErrs++;
+        showToast('❌ خطا در ذخیره: '+e.message);
+      }
+    } else {
+      errs++;
+      console.log('Could not parse:', line);
+    }
+  }
+  const errEl = document.getElementById('error-msg');
+  if(errs>0 && added===0){
+    errEl.style.display='';
+    errEl.textContent='⚠️ '+errs+' کانفیگ قابل خواندن نبود — فرمت درست: vless:// یا vmess://';
+  } else {
+    errEl.style.display='none';
+  }
+  if(added){
+    rawInput.value='';
+    btnAdd.disabled=true;
+    showToast(t().toastAdded(added));
+    render();
+  }
+}
+btnAdd.addEventListener('click',addConfigs);
+document.getElementById('btn-ping-all').addEventListener('click',pingAll);
+
+// ── Select ───────────────────────────────────────────────────────────────────
+function toggleSelect(id){
+  if(selectedIds.includes(id))selectedIds=selectedIds.filter(x=>x!==id);
+  else if(selectedIds.length<2)selectedIds.push(id);
+  else selectedIds=[selectedIds[1],id];
+  render();
+}
+
+// ── Delete ───────────────────────────────────────────────────────────────────
+async function deleteConfig(id){
+  try{await deleteFromDB(id);configs=configs.filter(c=>c.id!==id);selectedIds=selectedIds.filter(x=>x!==id);render();showToast(t().toastDeleted);}
+  catch(e){showToast('❌ خطا: '+e.message);}
+}
+
+// ── Copy ─────────────────────────────────────────────────────────────────────
+function copyRaw(id){const cfg=configs.find(c=>c.id===id);if(!cfg)return;navigator.clipboard.writeText(cfg.raw);showToast(t().toastCopied);}
+
+// ── Edit ─────────────────────────────────────────────────────────────────────
+const EDIT_FIELDS=[['name','نام'],['host','هاست'],['port','پورت'],['uuid','UUID'],['sni','SNI'],['path','مسیر']];
+function openEdit(id){
+  editingId=id;
+  const cfg=configs.find(c=>c.id===id);
+  document.getElementById('modal-fields').innerHTML=EDIT_FIELDS.map(([k,label])=>`<label style="display:block;margin-bottom:12px"><span class="field-label">${label}</span><input class="field-input" data-key="${k}" value="${cfg[k]||''}"/></label>`).join('');
+  document.getElementById('edit-modal').style.display='flex';
+}
+document.getElementById('btn-save').addEventListener('click',async()=>{
+  const cfg=configs.find(c=>c.id===editingId);
+  document.querySelectorAll('#modal-fields input').forEach(inp=>{cfg[inp.dataset.key]=inp.value;});
+  try{await updateInDB(cfg);render();closeEditModal();showToast(t().toastSaved);}
+  catch(e){showToast('❌ خطا: '+e.message);}
+});
+function closeEditModal(){document.getElementById('edit-modal').style.display='none';editingId=null;}
+document.getElementById('edit-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEditModal();});
+
+// ── QR / Export ───────────────────────────────────────────────────────────────
+function openQR(id){
+  qrCfgId=id;
+  const cfg=configs.find(c=>c.id===id);
+  document.getElementById('qr-modal-title').textContent='📤 '+cfg.name;
+  const box=document.getElementById('qr-box');
+  box.innerHTML='';
+  new QRCode(box,{text:cfg.raw,width:220,height:220,colorDark:'#e2e8f0',colorLight:'#111527',correctLevel:QRCode.CorrectLevel.M});
+  document.getElementById('qr-modal').style.display='flex';
+}
+
+document.getElementById('btn-copy-link').onclick=()=>{
+  const cfg=configs.find(c=>c.id===qrCfgId);
+  navigator.clipboard.writeText(cfg.raw);showToast('📋 لینک کپی شد');
+};
+document.getElementById('btn-copy-base64').onclick=()=>{
+  const cfg=configs.find(c=>c.id===qrCfgId);
+  navigator.clipboard.writeText(btoa(cfg.raw));showToast('📦 Base64 کپی شد');
+};
+document.getElementById('btn-dl-qr').onclick=()=>{
+  const canvas=document.querySelector('#qr-box canvas');
+  if(!canvas)return;
+  const a=document.createElement('a');a.href=canvas.toDataURL();a.download='config-qr.png';a.click();
+  showToast('💾 QR دانلود شد');
+};
+function closeQrModal(){document.getElementById('qr-modal').style.display='none';qrCfgId=null;}
+document.getElementById('qr-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeQrModal();});
+
+// ── Export All ────────────────────────────────────────────────────────────────
+function openExportAll(){document.getElementById('export-modal').style.display='flex';}
+function exportAllLinks(){navigator.clipboard.writeText(configs.map(c=>c.raw).join('\n'));showToast('📋 همه لینک‌ها کپی شدند');}
+function exportBase64(){navigator.clipboard.writeText(btoa(configs.map(c=>c.raw).join('\n')));showToast('📦 Base64 کپی شد');}
+function downloadTxt(){
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(configs.map(c=>c.raw).join('\n'));
+  a.download='configs.txt';a.click();showToast('💾 فایل دانلود شد');
+}
+function showSubscribeQR(){
+  const box=document.getElementById('qr-all-box');box.innerHTML='';
+  const data=btoa(configs.map(c=>c.raw).join('\n'));
+  new QRCode(box,{text:data,width:200,height:200,colorDark:'#e2e8f0',colorLight:'#111527',correctLevel:QRCode.CorrectLevel.M});
+  showToast('📱 QR اشتراک آماده شد');
+}
+document.getElementById('export-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.style.display='none';});
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.style.display='';
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',2500);
+}
+
+// ── PWA ───────────────────────────────────────────────────────────────────────
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;document.getElementById('install-banner').style.display='flex';});
+document.getElementById('btn-install').addEventListener('click',async()=>{if(!deferredInstall)return;deferredInstall.prompt();const{outcome}=await deferredInstall.userChoice;if(outcome==='accepted')showToast('✅ اپ نصب شد!');document.getElementById('install-banner').style.display='none';deferredInstall=null;});
+document.getElementById('btn-dismiss').addEventListener('click',()=>document.getElementById('install-banner').style.display='none');
+
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+// ── Login keyboard ────────────────────────────────────────────────────────────
+document.getElementById('pass-input').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
+document.getElementById('login-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeLoginModal();});
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+applyTheme();
+applyLang();
+setAdminUI();
+renderAnnounces();
+loadFromDB();
+
+
+
+</script>
+</body>
+</html>
